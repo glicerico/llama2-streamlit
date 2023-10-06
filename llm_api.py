@@ -16,7 +16,7 @@ from langchain.schema import HumanMessage
 from langchain.prompts import PromptTemplate
 
 # Load secrets from the configuration file
-CONFIG = toml.load("secrets.toml")
+CONFIG = toml.load(".streamlit/secrets.toml")
 BEARER_TOKEN = CONFIG["huggingface"]["bearer"]
 HG_API_TOKEN = CONFIG["huggingface"]["api_token"]
 ENDPOINT_URL = CONFIG["huggingface"]["endpoint_url"]

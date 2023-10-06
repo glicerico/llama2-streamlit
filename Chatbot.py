@@ -9,9 +9,8 @@ import toml
 
 from llm_api import reset_memory, continue_conversation, num_tokens_from_string, MAX_SYS_TOKENS
 
-# Load secrets from the configuration file
-CONFIG = toml.load("secrets.toml")
-DEFAULT_SYS_MESS = CONFIG.get("system", {}).get("message", "You are a helpful, respectful and honest assistant")
+# Load secrets from toml file
+DEFAULT_SYS_MESS = st.secrets.get("system", {}).get("message", "You are a helpful, respectful and honest assistant")
 
 # Reset the LLM memory
 reset_memory()

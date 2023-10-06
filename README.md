@@ -6,7 +6,7 @@ LangChain's [memory with summary and buffer](https://python.langchain.com/docs/m
 
 ## Run it locally
 
-You need to add your secrets to a `secrets.toml` file in the root of the project.
+You need to add your secrets to a `secrets.toml` file in the .streamlit folder.
 The file should look like this:
 
 ```toml
