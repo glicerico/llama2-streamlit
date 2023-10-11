@@ -5,7 +5,6 @@ This module provides a Streamlit interface for interacting with an LLM model.
 """
 
 import streamlit as st
-import toml
 
 from llm_api import reset_memory, continue_conversation, num_tokens_from_string, MAX_SYS_TOKENS
 
