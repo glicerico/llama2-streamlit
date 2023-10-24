@@ -6,13 +6,10 @@ This module provides a Streamlit interface for interacting with an LLM model.
 
 import streamlit as st
 
-from llm_api import reset_memory, continue_conversation, num_tokens_from_string, MAX_SYS_TOKENS
+from llm_api import continue_conversation, num_tokens_from_string, MAX_SYS_TOKENS, reset_memory
 
 # Load secrets from toml file
 DEFAULT_SYS_MESS = st.secrets.get("system", {}).get("message", "You are a helpful, respectful and honest assistant")
-
-# Reset the LLM memory
-reset_memory()
 
 st.title("💬 Chatbot")
 st.caption("🚀 A streamlit chatbot powered by Llama-2 derived models")
@@ -28,13 +25,13 @@ temperature = st.sidebar.number_input("Model Temperature:", min_value=0.0, max_v
 # Reset conversation button
 if st.sidebar.button("Reset Conversation"):
     st.session_state.clear()
-    st.experimental_rerun()
-    reset_memory()  # Reset the LLM memory
     st.success("Conversation reset successfully!")
+    st.rerun()
 
 # Initialize or retrieve message history
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
+    reset_memory()  # Reset the LLM memory
 
 # Display message history
 for msg in st.session_state.messages:
