@@ -33,38 +33,13 @@ hf = HuggingFaceEndpoint(
     huggingfacehub_api_token=HG_API_TOKEN
 )
 
-# Global variable to hold conversation memory
-memory = None
-
-
-def num_tokens_from_string(string: str, encoding_name: str) -> int:
-    """
-    Calculate the number of tokens in a text string.
-
-    Args:
-        string (str): The input string.
-        encoding_name (str): The name of the encoding to use.
-
-    Returns:
-        int: Number of tokens in the string.
-    """
-    encoding = tiktoken.get_encoding(encoding_name)
-    return len(encoding.encode(string))
-
-
-def reset_memory():
-    """Resets the memory of the LLM."""
-    global memory
-    memory = ConversationSummaryBufferMemory(
-        llm=hf, max_token_limit=MAX_MODEL_TOKENS - MAX_SYS_TOKENS, return_messages=True,
-        prompt=PromptTemplate(input_variables=['summary', 'new_lines'],
-                              template="""[INST] <<SYS>>
+memory_template = """[INST] <<SYS>>
 Progressively summarize the lines of conversation provided, adding onto the previous summary 
 returning a new summary.
-                          
+
 EXAMPLE
 Current summary:
-The human sks what the AI thinks of artificial intelligence. The AI thinks artificial intelligence is a force for good.
+The human asks what the AI thinks of artificial intelligence. The AI thinks artificial intelligence is a force for good.
                           
 New lines of conversation:
 Human: Why do you think artificial intelligence is a force for good?
@@ -81,8 +56,32 @@ Current summary:
 New lines of conversation:
 {new_lines}
 
-New summary:[/INST]""")
-    )
+New summary:[/INST]"""
+memory = None
+
+
+def reset_memory():
+    """Resets the memory of the LLM."""
+    global memory
+    memory = ConversationSummaryBufferMemory(
+        llm=hf, max_token_limit=MAX_MODEL_TOKENS - MAX_SYS_TOKENS, return_messages=True,
+        prompt=PromptTemplate(input_variables=['summary', 'new_lines'],
+                              template=memory_template))
+
+
+def num_tokens_from_string(string: str, encoding_name: str) -> int:
+    """
+    Calculate the number of tokens in a text string.
+
+    Args:
+        string (str): The input string.
+        encoding_name (str): The name of the encoding to use.
+
+    Returns:
+        int: Number of tokens in the string.
+    """
+    encoding = tiktoken.get_encoding(encoding_name)
+    return len(encoding.encode(string))
 
 
 def continue_conversation(messages, system_message="", max_new_tokens=512, temperature=0.7):
@@ -135,7 +134,7 @@ def continue_conversation(messages, system_message="", max_new_tokens=512, tempe
             "top_p": 0.7,
             "repetition_penalty": 1.2,
             "batch_size": 1,
-            "stop": ["</s>", "[/INST]"]  # For models that take them
+            "stop": ["</s>", "[INST]", "[/INST]"]  # For models that take them
         }
     }
 
